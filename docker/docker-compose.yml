@@ -22,7 +22,7 @@ services:
     image: postgres:13.2-alpine
     restart: unless-stopped
     ports:
-      - 25432:5432
+      - "$DOCKER_DB_EXTERNAL_PORT:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
