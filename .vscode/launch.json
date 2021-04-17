@@ -21,5 +21,18 @@
       // "postDebugTask": "stop_container",
       "django": true
     },
+    {
+      "name": "local: runserver",
+      "type": "python",
+      "request": "launch",
+      "envFile": "${workspaceFolder}/local.env",
+      "program": "${workspaceFolder}/manage.py",
+      "args": [
+          "runserver",
+      ],
+      "preLaunchTask": "start_env",
+      "django": true,
+      "justMyCode": false
+  },
   ]
 }

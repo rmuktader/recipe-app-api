@@ -1,0 +1,1 @@
+docker-compose run web bash -c 'echo "Environment started"'

@@ -13,5 +13,15 @@
       "type": "shell",
       "command": ".vscode/scripts/stop.sh"
     },
+    {
+      "label": "start_env",
+      "type": "shell",
+      "command": "cd docker && ./dc-start-local-env.sh",
+      "problemMatcher": [],
+      "group": {
+          "kind": "build",
+          "isDefault": true
+      }
+    }
   ]
 }
