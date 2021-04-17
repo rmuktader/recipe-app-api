@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  web:
+    image: "django-boilerplate:dev"
+    build:
+      target: development_build
+      context: ..
+      args:
+        DJANGO_ENV: development
+    command: python -Wd manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+      - "3000:3000"
+    env_file:
+      - ./.env
+    volumes:
+      - ${PROJECT_PATH}:/code
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13.2-alpine
+    restart: unless-stopped
+    ports:
+      - 25432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+
+volumes:
+  postgres_data:
