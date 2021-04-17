@@ -28,5 +28,11 @@ services:
     env_file:
       - ./.env
 
+  poetry:
+    build: ..
+    image: app
+    volumes:
+      - ${PROJECT_PATH}:/code
+
 volumes:
   postgres_data:
