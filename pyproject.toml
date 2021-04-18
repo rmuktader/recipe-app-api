@@ -8,6 +8,7 @@ authors = ["Rayhan Muktader <rmuktader@gmail.com>"]
 python = "^3.9"
 Django = "^3.2"
 django-extensions = "^3.1.2"
+psycopg2 = "^2.8.6"
 
 [tool.poetry.dev-dependencies]
 ptvsd = "^4.3.2"
