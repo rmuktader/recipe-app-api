@@ -33,6 +33,18 @@
       "preLaunchTask": "start_env",
       "django": true,
       "justMyCode": false
-  },
+    },
+    {
+      "name": "local: test",
+      "type": "python",
+      "request": "launch",
+      "envFile": "${workspaceFolder}/local.env",
+      "program": "${workspaceFolder}/manage.py",
+      "args": [
+          "test",
+      ],
+      "preLaunchTask": "start_env",
+      "django": true
+    },
   ]
 }
