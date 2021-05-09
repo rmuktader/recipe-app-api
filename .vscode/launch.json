@@ -10,15 +10,15 @@
       "type": "python",
       "request": "attach",
       "pathMappings": [
-          {
-              "localRoot": "${workspaceFolder}",
-              "remoteRoot": "/code"
-          }
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "/code"
+        }
       ],
       "port": 3000,
       "host": "localhost",
       "preLaunchTask": "start_container",
-      // "postDebugTask": "stop_container",
+      "postDebugTask": "stop_container",
       "django": true
     },
     {
@@ -28,9 +28,10 @@
       "envFile": "${workspaceFolder}/local.env",
       "program": "${workspaceFolder}/manage.py",
       "args": [
-          "runserver",
+        "runserver",
       ],
       "preLaunchTask": "start_env",
+      "postDebugTask": "stop_container",
       "django": true,
       "justMyCode": false
     },
@@ -41,9 +42,10 @@
       "envFile": "${workspaceFolder}/local.env",
       "program": "${workspaceFolder}/manage.py",
       "args": [
-          "test",
+        "test",
       ],
       "preLaunchTask": "start_env",
+      "postDebugTask": "stop_container",
       "django": true
     },
   ]
