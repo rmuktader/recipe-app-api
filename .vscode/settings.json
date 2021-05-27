@@ -1,0 +1,11 @@
+{
+  "python.pythonPath": "/Users/rayhanmuktader/Library/Caches/pypoetry/virtualenvs/django-boilerplate-0j0GtgN8-py3.9/bin/python",
+  "editor.formatOnSave": true,
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": [
+    "--line-length=119"
+  ],
+  "python.sortImports.args": [
+    "--profile=black",
+  ],
+}
