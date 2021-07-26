@@ -20,14 +20,14 @@ ENV DJANGO_ENV=${DJANGO_ENV} \
 # System deps:
 RUN apt-get update \
   && apt-get install --no-install-recommends -y \
-    bash \
-    build-essential \
-    curl \
-    gettext \
-    git \
-    libpq-dev \
-    wget \
-    postgresql-client \
+  bash \
+  build-essential \
+  curl \
+  gettext \
+  git \
+  libpq-dev \
+  wget \
+  postgresql-client \
   # Cleaning cache:
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
   && pip install "poetry==$POETRY_VERSION" && poetry --version
@@ -41,7 +41,11 @@ RUN poetry install
 # copy project
 COPY . .
 
+RUN mkdir -p /vol/web/media
+RUN mkdir -p /vol/web/static
 # set user without root access. Is there a better way?
 RUN useradd user -s /bin/bash && chown -R user /code
 # RUN useradd -d /code -m -s /bin/bash user
+RUN chown -R user:user /vol/
+RUN chmod -R 755 /vol/web
 USER user
