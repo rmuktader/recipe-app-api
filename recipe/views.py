@@ -2,7 +2,10 @@ from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 from core.models import Ingredient, Tag, Recipe
 from recipe.serializers import (
@@ -85,7 +88,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """Save a recipe for the authenticated user"""
         serializer.save(user=self.request.user)
 
-    @action(methods=["POST"], detail=True, url_path="upload-image")
+    @swagger_auto_schema(
+        operation_description="Upload recipe image.",
+        manual_parameters=[
+            openapi.Parameter(
+                name="image", in_=openapi.IN_FORM, type=openapi.TYPE_FILE, required=True, description="Image"
+            )
+        ],
+        responses={400: "Invalid data in uploaded file", 200: "Success"},
+    )
+    @action(methods=["POST"], detail=True, url_path="upload-image", parser_classes=(MultiPartParser,))
     def upload_image(self, request, pk=None):
         """Upload an image to a recipe"""
         recipe = self.get_object()
