@@ -3,7 +3,8 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from core.models import Tag, Ingredient, Recipe, recipe_image_file_path
+from core.models import Ingredient, Recipe, recipe_image_file_path
+from core.factories import TagFactory
 
 
 def sample_user(email="test@test.com", password="password123"):
@@ -12,6 +13,9 @@ def sample_user(email="test@test.com", password="password123"):
 
 
 class ModelTests(TestCase):
+    def setUp(self) -> None:
+        TagFactory.reset_sequence()
+
     def test_create_user_with_email_successful(self):
         """Test creating a new user with an email is successful"""
         email = "test@gmail.com"
@@ -42,7 +46,7 @@ class ModelTests(TestCase):
 
     def test_tag_str(self):
         """Test the tag string representaion"""
-        tag = Tag.objects.create(user=sample_user(), name="Vegan")
+        tag = TagFactory.create(user=sample_user())
 
         self.assertEqual(str(tag), tag.name)
 

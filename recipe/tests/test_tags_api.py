@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import Recipe, Tag
-
+from core.factories import TagFactory
 from recipe.serializers import TagSerializer
 
 
@@ -33,11 +33,12 @@ class PrivateTagsApitests(TestCase):
         self.user = get_user_model().objects.create_user("test@test.com", "password123")
         self.client = APIClient()
         self.client.force_authenticate(self.user)
+        TagFactory.reset_sequence()
 
     def test_retrive_tags(self):
         """Test retrieving tags"""
-        Tag.objects.create(user=self.user, name="Vegan")
-        Tag.objects.create(user=self.user, name="Dessert")
+        TagFactory.create(user=self.user, name="Vegan")
+        TagFactory.create(user=self.user, name="Dessert")
 
         res = self.client.get(TAGS_URL)
 
@@ -50,8 +51,8 @@ class PrivateTagsApitests(TestCase):
     def test_tags_limited_to_user(self):
         """Test that tags returned are for authenticated user"""
         user2 = get_user_model().objects.create_user("other@test.com", "password123")
-        Tag.objects.create(user=user2, name="Fruity")
-        tag = Tag.objects.create(user=self.user, name="Baked")
+        TagFactory.create(user=user2, name="Fruity")
+        tag = TagFactory.create(user=self.user, name="Baked")
 
         res = self.client.get(TAGS_URL)
 
@@ -76,8 +77,8 @@ class PrivateTagsApitests(TestCase):
 
     def test_retrieve_tags_assigned_to_recipes(self):
         """Test filtering tags by those assigned to recipes"""
-        tag1 = Tag.objects.create(user=self.user, name="Breakfast")
-        tag2 = Tag.objects.create(user=self.user, name="Lunch")
+        tag1 = TagFactory.create(user=self.user, name="Breakfast")
+        tag2 = TagFactory.create(user=self.user, name="Lunch")
         recipe = Recipe.objects.create(user=self.user, title="Coriander eggs on toast", time_minutes=10, price=5.00)
         recipe.tags.add(tag1)
 
