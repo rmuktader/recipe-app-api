@@ -1,3 +1,4 @@
+from core.factories import IngredientFactory
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import TestCase
@@ -8,7 +9,7 @@ from rest_framework.test import APIClient
 from core.models import Ingredient
 
 from recipe.serializers import IngredientSerializer
-from recipe.tests.test_recipe_api import sample_ingredient, sample_recipe
+from recipe.tests.test_recipe_api import sample_recipe
 
 
 INGREDIENT_URL = reverse("recipe:ingredient-list")
@@ -34,11 +35,11 @@ class PrivateIngredientApiTest(TestCase):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user("test@test.com", "testpass")
         self.client.force_authenticate(self.user)
+        IngredientFactory.reset_sequence()
 
     def test_retrieving_ingredient_list(self):
         """Test retrieving a list of ingredients"""
-        Ingredient.objects.create(user=self.user, name="Kale")
-        Ingredient.objects.create(user=self.user, name="Salt")
+        IngredientFactory.create_batch(2, user=self.user)
 
         res = self.client.get(INGREDIENT_URL)
         ingredients = Ingredient.objects.all().order_by("-name")
@@ -49,8 +50,8 @@ class PrivateIngredientApiTest(TestCase):
     def test_ingredients_limited_to_user(self):
         """Test only ingredients for the authenticated user are returned"""
         user2 = get_user_model().objects.create_user("test2@test.com", "pass12344")
-        Ingredient.objects.create(user=user2, name="Vinegar")
-        ingredient = Ingredient.objects.create(user=self.user, name="Tumeric")
+        IngredientFactory.create(user=user2)
+        ingredient = IngredientFactory.create(user=self.user)
 
         res = self.client.get(INGREDIENT_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -74,8 +75,8 @@ class PrivateIngredientApiTest(TestCase):
 
     def test_retrieve_ingredients_assigned_to_recipes(self):
         """Test filtering ingredients by those assinged to recipes"""
-        ingredient1 = sample_ingredient(self.user, name="Apples")
-        ingredient2 = sample_ingredient(self.user, "Turkey")
+        ingredient1 = IngredientFactory(user=self.user)
+        ingredient2 = IngredientFactory(user=self.user)
         recipe = sample_recipe(self.user, title="Apple crumbles")
         recipe.ingredients.add(ingredient1)
 

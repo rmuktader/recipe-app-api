@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import Ingredient, Recipe
-from core.factories import TagFactory
+from core.factories import IngredientFactory, TagFactory
 from recipe.serializers import RecipeDetailSerializer, RecipeSerializer
 
 
@@ -25,11 +25,6 @@ def image_upload_url(recipe_id):
 def detail_url(recipe_id):
     """Return recipe detail url"""
     return reverse("recipe:recipe-detail", args=[recipe_id])
-
-
-def sample_ingredient(user, name="Cinnamon"):
-    """Create and return a sample ingredient"""
-    return Ingredient.objects.create(user=user, name=name)
 
 
 def sample_recipe(user, **params):
@@ -61,6 +56,7 @@ class PrivateRecipeApiTests(TestCase):
         self.user = get_user_model().objects.create_user("test@test.com", "testpass1234")
         self.client.force_authenticate(self.user)
         TagFactory.reset_sequence()
+        IngredientFactory.reset_sequence()
 
     def test_retrieve_recipes(self):
         """Test retrieving a list of recipes"""
@@ -92,7 +88,7 @@ class PrivateRecipeApiTests(TestCase):
         """Test viewing a recipe detail"""
         recipe = sample_recipe(self.user)
         recipe.tags.add(TagFactory.create(user=self.user))
-        recipe.ingredients.add(sample_ingredient(self.user))
+        recipe.ingredients.add(IngredientFactory.create(user=self.user))
 
         url = detail_url(recipe.id)
         res = self.client.get(url)
@@ -126,8 +122,8 @@ class PrivateRecipeApiTests(TestCase):
 
     def test_create_recipe_with_ingredients(self):
         """Test create recipe with ingredients"""
-        ingredient1 = sample_ingredient(self.user, name="Prawns")
-        ingredient2 = sample_ingredient(self.user, name="Ginger")
+        ingredient1 = IngredientFactory.create(user=self.user)
+        ingredient2 = IngredientFactory.create(user=self.user)
         payload = {
             "title": "Thai prawn red curry",
             "ingredients": (ingredient1.id, ingredient2.id),
@@ -227,8 +223,8 @@ class RecipeImageUploadTests(TestCase):
         """Test returning recipe with specific ingredients"""
         recipe1 = sample_recipe(user=self.user, title="Posh beans on toast")
         recipe2 = sample_recipe(user=self.user, title="Chicken caccatori")
-        ingredient1 = sample_ingredient(user=self.user, name="Feta cheese")
-        ingredient2 = sample_ingredient(user=self.user, name="Chicken")
+        ingredient1 = IngredientFactory.create(user=self.user)
+        ingredient2 = IngredientFactory.create(user=self.user)
         recipe1.ingredients.add(ingredient1)
         recipe2.ingredients.add(ingredient2)
         recipe3 = sample_recipe(user=self.user, title="Steak and mushrooms")
