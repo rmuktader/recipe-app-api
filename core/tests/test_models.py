@@ -4,12 +4,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 
 from core.models import recipe_image_file_path
-from core.factories import IngredientFactory, TagFactory, RecipeFactory
-
-
-def sample_user(email="test@test.com", password="password123"):
-    """Create a sample user"""
-    return get_user_model().objects.create_user(email, password)
+from core.factories import IngredientFactory, TagFactory, RecipeFactory, UserFactory
 
 
 class ModelTests(TestCase):
@@ -47,19 +42,21 @@ class ModelTests(TestCase):
 
     def test_tag_str(self):
         """Test the tag string representaion"""
-        tag = TagFactory.create(user=sample_user())
+        tag = TagFactory.create(user=UserFactory.create())
 
         self.assertEqual(str(tag), tag.name)
 
     def test_ingredient_str(self):
         """Test ingredient string representaion"""
-        ingredient = IngredientFactory.create(user=sample_user())
+        ingredient = IngredientFactory.create(user=UserFactory.create())
 
         self.assertEqual(ingredient.name, str(ingredient))
 
     def test_recipe_str(self):
         """Test the recipe string representation"""
-        recipe = RecipeFactory.create(user=sample_user(), title="Steak and musroom sauce", time_minutes=5, price=5.00)
+        recipe = RecipeFactory.create(
+            user=UserFactory.create(), title="Steak and musroom sauce", time_minutes=5, price=5.00
+        )
 
         self.assertEqual(str(recipe), recipe.title)
 

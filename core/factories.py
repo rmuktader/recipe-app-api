@@ -1,5 +1,5 @@
 import factory
-from factory.declarations import SubFactory
+from django.contrib.auth import get_user_model
 from core.models import Tag, Ingredient, Recipe
 
 
@@ -43,3 +43,13 @@ class RecipeFactory(factory.django.DjangoModelFactory):
         if extracted:
             for tag in extracted:
                 self.tags.add(tag)
+
+
+class UserFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = get_user_model()
+
+    name = factory.faker.Faker("name")
+    email = factory.lazy_attribute(lambda a: f"{a.name.replace(' ', '.')}@test.com")
+    is_active = True
+    is_staff = False
