@@ -3,8 +3,8 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from core.models import Recipe, recipe_image_file_path
-from core.factories import IngredientFactory, TagFactory
+from core.models import recipe_image_file_path
+from core.factories import IngredientFactory, TagFactory, RecipeFactory
 
 
 def sample_user(email="test@test.com", password="password123"):
@@ -59,7 +59,7 @@ class ModelTests(TestCase):
 
     def test_recipe_str(self):
         """Test the recipe string representation"""
-        recipe = Recipe.objects.create(user=sample_user(), title="Steak and musroom sauce", time_minutes=5, price=5.00)
+        recipe = RecipeFactory.create(user=sample_user(), title="Steak and musroom sauce", time_minutes=5, price=5.00)
 
         self.assertEqual(str(recipe), recipe.title)
 

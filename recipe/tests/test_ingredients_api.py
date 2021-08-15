@@ -1,4 +1,4 @@
-from core.factories import IngredientFactory
+from core.factories import IngredientFactory, RecipeFactory
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import TestCase
@@ -9,7 +9,6 @@ from rest_framework.test import APIClient
 from core.models import Ingredient
 
 from recipe.serializers import IngredientSerializer
-from recipe.tests.test_recipe_api import sample_recipe
 
 
 INGREDIENT_URL = reverse("recipe:ingredient-list")
@@ -75,9 +74,9 @@ class PrivateIngredientApiTest(TestCase):
 
     def test_retrieve_ingredients_assigned_to_recipes(self):
         """Test filtering ingredients by those assinged to recipes"""
-        ingredient1 = IngredientFactory(user=self.user)
-        ingredient2 = IngredientFactory(user=self.user)
-        recipe = sample_recipe(self.user, title="Apple crumbles")
+        ingredient1 = IngredientFactory.create(user=self.user)
+        ingredient2 = IngredientFactory.create(user=self.user)
+        recipe = RecipeFactory.create(user=self.user)
         recipe.ingredients.add(ingredient1)
 
         res = self.client.get(INGREDIENT_URL, {"assigned_only": 1})

@@ -9,8 +9,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import Ingredient, Recipe
-from core.factories import IngredientFactory, TagFactory
+from core.models import Recipe
+from core.factories import IngredientFactory, RecipeFactory, TagFactory
 from recipe.serializers import RecipeDetailSerializer, RecipeSerializer
 
 
@@ -25,14 +25,6 @@ def image_upload_url(recipe_id):
 def detail_url(recipe_id):
     """Return recipe detail url"""
     return reverse("recipe:recipe-detail", args=[recipe_id])
-
-
-def sample_recipe(user, **params):
-    """Create and return sample recipe"""
-    defaults = {"title": "Sample recipe", "time_minutes": 10, "price": 5.00}
-    defaults.update(params)
-
-    return Recipe.objects.create(user=user, **defaults)
 
 
 class PublicRecipeApiTests(TestCase):
@@ -57,11 +49,12 @@ class PrivateRecipeApiTests(TestCase):
         self.client.force_authenticate(self.user)
         TagFactory.reset_sequence()
         IngredientFactory.reset_sequence()
+        RecipeFactory.reset_sequence()
 
     def test_retrieve_recipes(self):
         """Test retrieving a list of recipes"""
-        sample_recipe(self.user)
-        sample_recipe(self.user)
+        RecipeFactory.create(user=self.user)
+        RecipeFactory.create(user=self.user)
 
         res = self.client.get(RECIPES_URL)
 
@@ -73,8 +66,8 @@ class PrivateRecipeApiTests(TestCase):
     def test_recipe_limited_to_user(self):
         """Test retrieving recipes for user"""
         user2 = get_user_model().objects.create_user("test2@test.com", "test12344")
-        sample_recipe(self.user)
-        sample_recipe(user2)
+        RecipeFactory.create(user=self.user)
+        RecipeFactory.create(user=user2)
 
         res = self.client.get(RECIPES_URL)
 
@@ -86,7 +79,7 @@ class PrivateRecipeApiTests(TestCase):
 
     def test_view_recipe_detail(self):
         """Test viewing a recipe detail"""
-        recipe = sample_recipe(self.user)
+        recipe = RecipeFactory.create(user=self.user)
         recipe.tags.add(TagFactory.create(user=self.user))
         recipe.ingredients.add(IngredientFactory.create(user=self.user))
 
@@ -141,7 +134,7 @@ class PrivateRecipeApiTests(TestCase):
 
     def test_partial_update_recipe(self):
         """Test updating a recipe with patch"""
-        recipe = sample_recipe(self.user)
+        recipe = RecipeFactory.create(user=self.user)
         recipe.tags.add(TagFactory.create(user=self.user))
         new_tag = TagFactory.create(user=self.user)
 
@@ -157,7 +150,7 @@ class PrivateRecipeApiTests(TestCase):
 
     def test_full_update_recipe(self):
         """Test updating a recipe with put"""
-        recipe = sample_recipe(self.user)
+        recipe = RecipeFactory.create(user=self.user)
         recipe.tags.add(TagFactory.create(user=self.user))
         payload = {"title": "Spaghetti carbonara", "time_minutes": 25, "price": 5.00}
         url = detail_url(recipe.id)
@@ -175,7 +168,7 @@ class RecipeImageUploadTests(TestCase):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user("user1@test.com", "testpass123")
         self.client.force_authenticate(self.user)
-        self.recipe = sample_recipe(self.user)
+        self.recipe = RecipeFactory.create(user=self.user)
 
     def tearDown(self):
         self.recipe.image.delete()
@@ -203,13 +196,13 @@ class RecipeImageUploadTests(TestCase):
 
     def test_filter_recipes_by_tags(self):
         """Test returning recipes with specific tags"""
-        recipe1 = sample_recipe(user=self.user, title="Thai vegetable curry")
-        recipe2 = sample_recipe(user=self.user, title="Eggplant with tahini")
+        recipe1 = RecipeFactory.create(user=self.user, title="Thai vegetable curry")
+        recipe2 = RecipeFactory.create(user=self.user, title="Eggplant with tahini")
         tag1 = TagFactory.create(user=self.user)
         tag2 = TagFactory.create(user=self.user)
         recipe1.tags.add(tag1)
         recipe2.tags.add(tag2)
-        recipe3 = sample_recipe(user=self.user, title="Fish and chips")
+        recipe3 = RecipeFactory.create(user=self.user, title="Fish and chips")
 
         res = self.client.get(RECIPES_URL, {"tags": f"{tag1.id},{tag2.id}"})
         serializer1 = RecipeSerializer(recipe1)
@@ -221,13 +214,13 @@ class RecipeImageUploadTests(TestCase):
 
     def test_filter_recipe_by_ingredients(self):
         """Test returning recipe with specific ingredients"""
-        recipe1 = sample_recipe(user=self.user, title="Posh beans on toast")
-        recipe2 = sample_recipe(user=self.user, title="Chicken caccatori")
+        recipe1 = RecipeFactory.create(user=self.user, title="Posh beans on toast")
+        recipe2 = RecipeFactory.create(user=self.user, title="Chicken caccatori")
         ingredient1 = IngredientFactory.create(user=self.user)
         ingredient2 = IngredientFactory.create(user=self.user)
         recipe1.ingredients.add(ingredient1)
         recipe2.ingredients.add(ingredient2)
-        recipe3 = sample_recipe(user=self.user, title="Steak and mushrooms")
+        recipe3 = RecipeFactory.create(user=self.user, title="Steak and mushrooms")
 
         res = self.client.get(RECIPES_URL, {"ingredients": f"{ingredient1.id},{ingredient2.id}"})
 
