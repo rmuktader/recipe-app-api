@@ -41,11 +41,7 @@ RUN poetry install
 # copy project
 COPY . .
 
-RUN mkdir -p /vol/web/media
-RUN mkdir -p /vol/web/static
 # set user without root access. Is there a better way?
 RUN useradd user -s /bin/bash && chown -R user /code
 # RUN useradd -d /code -m -s /bin/bash user
-RUN chown -R user:user /vol/
-RUN chmod -R 755 /vol/web
 USER user

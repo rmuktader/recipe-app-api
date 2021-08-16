@@ -17,6 +17,8 @@ services:
       - ./.env
     volumes:
       - ${PROJECT_PATH}:/code
+      - static-volume:/code/static
+      - media-volume:/code/media
     depends_on:
       - db
 
@@ -38,3 +40,5 @@ services:
 
 volumes:
   postgres_data:
+  static-volume:
+  media-volume:
