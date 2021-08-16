@@ -173,7 +173,7 @@ class RecipeImageUploadTests(TestCase):
     def tearDown(self):
         self.recipe.image.delete()
 
-    def xtest_upload_image_to_recipe(self):
+    def test_upload_image_to_recipe(self):
         """Test uploading an image to recipe"""
         url = image_upload_url(self.recipe.id)
         with tempfile.NamedTemporaryFile(suffix=".jpg") as ntf:

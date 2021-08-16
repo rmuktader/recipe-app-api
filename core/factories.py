@@ -8,7 +8,6 @@ class TagFactory(factory.django.DjangoModelFactory):
         model = Tag
 
     name = factory.Sequence(lambda n: f"tag-{n}")
-    # email = factory.LazyAttribute(lambda a: '{}.{}@example.com'.format(a.first_name, a.last_name).lower())
 
 
 class IngredientFactory(factory.django.DjangoModelFactory):
@@ -26,7 +25,7 @@ class RecipeFactory(factory.django.DjangoModelFactory):
     time_minutes = factory.faker.Faker("pyint")
     price = factory.faker.Faker("pydecimal", right_digits=2, positive=True, min_value=1, max_value=500)
     link = factory.faker.Faker("url")
-    # image = factory.django.ImageField(color="blue")
+    image = factory.django.ImageField(color="blue")
 
     @factory.post_generation
     def ingredients(self, create, extracted, **kwargs):
