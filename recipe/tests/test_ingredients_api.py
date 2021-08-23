@@ -1,7 +1,9 @@
+import shutil
 from core.factories import IngredientFactory, RecipeFactory
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.urls import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -27,6 +29,7 @@ class PublicIngredientApiTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
+@override_settings(MEDIA_ROOT=settings.TEST_MEDIA_ROOT)
 class PrivateIngredientApiTest(TestCase):
     """Test ingredients can retreived by authorized user"""
 
@@ -35,6 +38,9 @@ class PrivateIngredientApiTest(TestCase):
         self.user = get_user_model().objects.create_user("test@test.com", "testpass")
         self.client.force_authenticate(self.user)
         IngredientFactory.reset_sequence()
+
+    def tearDown(self):
+        shutil.rmtree(settings.TEST_MEDIA_ROOT)
 
     def test_retrieving_ingredient_list(self):
         """Test retrieving a list of ingredients"""

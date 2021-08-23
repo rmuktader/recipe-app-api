@@ -1,9 +1,11 @@
 import tempfile
 import os
+import shutil
 from PIL import Image
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.conf import settings
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from rest_framework import status
@@ -12,7 +14,6 @@ from rest_framework.test import APIClient
 from core.models import Recipe
 from core.factories import IngredientFactory, RecipeFactory, TagFactory
 from recipe.serializers import RecipeDetailSerializer, RecipeSerializer
-
 
 RECIPES_URL = reverse("recipe:recipe-list")
 
@@ -40,6 +41,7 @@ class PublicRecipeApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
+@override_settings(MEDIA_ROOT=settings.TEST_MEDIA_ROOT)
 class PrivateRecipeApiTests(TestCase):
     """Test authorized receipe API access"""
 
@@ -50,6 +52,9 @@ class PrivateRecipeApiTests(TestCase):
         TagFactory.reset_sequence()
         IngredientFactory.reset_sequence()
         RecipeFactory.reset_sequence()
+
+    def tearDown(self):
+        shutil.rmtree(settings.TEST_MEDIA_ROOT)
 
     def test_retrieve_recipes(self):
         """Test retrieving a list of recipes"""
@@ -163,6 +168,7 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(recipe.tags.count(), 0)
 
 
+@override_settings(MEDIA_ROOT=settings.TEST_MEDIA_ROOT)
 class RecipeImageUploadTests(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -171,7 +177,7 @@ class RecipeImageUploadTests(TestCase):
         self.recipe = RecipeFactory.create(user=self.user)
 
     def tearDown(self):
-        self.recipe.image.delete()
+        shutil.rmtree(settings.TEST_MEDIA_ROOT)
 
     def test_upload_image_to_recipe(self):
         """Test uploading an image to recipe"""
