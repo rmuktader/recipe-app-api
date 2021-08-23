@@ -133,6 +133,7 @@ MEDIA_URL = "/media/"
 
 MEDIA_ROOT = str(BASE_DIR / "media")
 STATIC_ROOT = str(BASE_DIR / "static")
+TEST_MEDIA_ROOT = f"{MEDIA_ROOT}/tests"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
